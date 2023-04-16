@@ -1,0 +1,26 @@
+FROM ghcr.io/agpsn/docker-base:alpine
+ 
+#MAIN
+ARG PVERSION
+ARG PBRANCH="develop"
+
+RUN set -xe && \
+	echo "***** update system packages *****" apk upgrade --no-cache && \
+	echo "***** install runtime packages *****" && apk add --no-cache xmlstarlet icu-libs && \
+	echo "***** install lidarr *****" && if [ -z ${PVERSION+x} ]; then PVERSION=$(curl -sL "https://prowlarr.servarr.com/v1/update/${PBRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version'); fi && mkdir -p "${APP_DIR}/prowlarr/bin" && curl -o /tmp/prowlarr.tar.gz -L "https://prowlarr.servarr.com/v1/update/${PBRANCH}/updatefile?version=${PVERSION}&os=linuxmusl&runtime=netcore&arch=x64" && tar xzf /tmp/prowlarr.tar.gz -C "${APP_DIR}/prowlarr/bin" --strip-components=1 && printf "UpdateMethod=docker\nBranch=${PBRANCH}\nPackageVersion=${PVERSION} [${PBRANCH}]\nPackageAuthor=[agpsn](https://github.com/agpsn/prowlarr-develop)\n" >"${APP_DIR}/prowlarr/package_info" && \
+
+	echo "***** cleanup *****" && rm -rf /tmp/* && \
+	echo "***** setting version *****" && echo $PVERSION > "${APP_DIR}/prowlarr/app_version"
+
+# add local files
+COPY root/ /
+
+# healthcheck
+HEALTHCHECK  --interval=30s --timeout=30s --start-period=10s --retries=5 CMD curl --fail http://localhost:9696 || exit 1
+
+# label
+LABEL org.opencontainers.image.source="https://github.com/agpsn/prowlarr-develop"
+
+# ports and volumes
+EXPOSE 9696
+VOLUME "${CONFIG_DIR}"
