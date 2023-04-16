@@ -3,7 +3,7 @@ clear; set -eu
 
 echo $(cat ~/.ghcr-token) | docker login ghcr.io -u $(cat ~/.ghcr-user) --password-stdin &>/dev/null
 GBRANCH=$(git branch | grep "*" | rev | cut -f1 -d" " | rev)
-PVERSION=$(curl -sL "https://prowlarr.servarr.com/v1/update/${PROWLARR_BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version')
+PVERSION=$(curl -sL "https://prowlarr.servarr.com/v1/update/develop/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version')
 APP=prowlarr
 
 if [ $GBRANCH != "develop" ]; then git checkout develop; fi
