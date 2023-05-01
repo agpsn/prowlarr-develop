@@ -13,3 +13,4 @@ docker build --quiet  --force-rm --rm --tag ghcr.io/agpsn/docker-prowlarr:develo
 docker push --quiet ghcr.io/agpsn/docker-prowlarr:develop; docker push --quiet ghcr.io/agpsn/docker-prowlarr:$PVERSION && docker image rm -f ghcr.io/agpsn/docker-prowlarr:$PVERSION
 git tag -f $PVERSION && git push --quiet origin $PVERSION -f --tags
 git add . && git commit -m "Updated" && git push --quiet
+echo ""
