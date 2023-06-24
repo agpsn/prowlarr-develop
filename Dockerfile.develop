@@ -3,6 +3,7 @@ FROM ghcr.io/agpsn/alpine-base:latest
 #MAIN
 ARG PVERSION
 ARG PBRANCH="develop"
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -xe && \
 	echo "***** update system packages *****" apk upgrade --no-cache && \
